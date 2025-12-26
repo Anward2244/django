@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from basic.models import userData
+import json
 
 # Create your views here.
 def home(request):
@@ -61,3 +64,18 @@ def pages(request):
     page_data = items[start:end]
 
     return JsonResponse({"limit": limit, "total_pages": total_pages,"current_page": page, "data": page_data,})
+
+@csrf_exempt
+def dataInsert(request):
+    try:
+        if request.method == "POST":
+
+            data = json.loads(request.body)
+            print(data)
+            name = data.get("name")
+            age = data.get("age")
+            branch = data.get("branch")
+            userData.objects.create(name=name, age=age, branch=branch)
+        return JsonResponse({"status":"successful", "data":data, "status_code": 201},status=201)
+    except Exception as e:
+        return JsonResponse({'status':'failed',"error":str(e),"status_code": 500},status=500)
