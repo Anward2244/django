@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from basic.models import userData
+from basic.models import userData,MovieBooking
 import json
 
 # Create your views here.
@@ -65,6 +65,7 @@ def pages(request):
 
     return JsonResponse({"limit": limit, "total_pages": total_pages,"current_page": page, "data": page_data,})
 
+# Data inserting into DATABASE___________________________________________________________________________________
 @csrf_exempt
 def dataInsert(request):
     try:
@@ -79,3 +80,43 @@ def dataInsert(request):
         return JsonResponse({"status":"successful", "data":data, "status_code": 201},status=201)
     except Exception as e:
         return JsonResponse({'status':'failed',"error":str(e),"status_code": 500},status=500)
+
+
+# Adding movie details into DATABASE________________________________________________________________________
+@csrf_exempt
+def movieInsert(request):
+    try:
+        if request.method == "POST":
+
+            data = json.loads(request.body)
+            print(data)
+
+            moviename = data.get("moviename")
+            genre = data.get("genre")
+            showtime = data.get("showtime")
+            screenname = data.get("screenname")
+
+            MovieBooking.objects.create(moviename=moviename, genre=genre, showtime=showtime, screenname=screenname)
+
+            return JsonResponse(
+                {"status": "successful", "data": data, "status_code": 201},status=201)
+
+        return JsonResponse({"status": "failed", "message": "Only POST method allowed"}, status=405)
+
+    except Exception as e:
+        return JsonResponse({"status": "failed","error": str(e),"status_code": 500},status=500)
+
+# Get Movies by GENRE_______________________________________________________________________________________
+def getMoviesByGenrename(request,genre):
+    try:
+        if request.method=="GET":
+            data=MovieBooking.objects.filter(genre=genre).values()           
+            final_data=list(data) 
+            if len(final_data)==0:
+                msg="no records found"
+            else:
+                msg="Records fetched successfully"          
+            return JsonResponse({"status":"success","msg":msg,genre:final_data},status=200)
+        return JsonResponse({"status":"failure","msg":"only get method allowed"},status=400)
+    except Exception as e:
+        return JsonResponse({"status":"error","msg":"something went wrong"})

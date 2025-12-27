@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from basic.views import home, about, contact, services, htres, jsres, getreq, cityfil, pages, dataInsert
+from basic.views import movieInsert, getMoviesByGenrename, home, about, contact, services, htres, jsres, getreq, cityfil, pages, dataInsert
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,5 +29,7 @@ urlpatterns = [
     path('getreq/',getreq),
     path('city/',cityfil),
     path('pages/', pages),
-    path('dataInsert/',dataInsert)
+    path('dataInsert/',dataInsert),
+    path('movieInsert/', movieInsert),
+    path('movieByGenre/<str:genre>', getMoviesByGenrename)
 ]
