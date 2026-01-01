@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from basic.models import userData,MovieBooking
+from basic.models import Book,userData,MovieBooking
 import json
 
 # Create your views here.
@@ -120,3 +120,93 @@ def getMoviesByGenrename(request,genre):
         return JsonResponse({"status":"failure","msg":"only get method allowed"},status=400)
     except Exception as e:
         return JsonResponse({"status":"error","msg":"something went wrong"})
+
+
+# Updating Movie Screens by using update___________________________________________________________
+
+@csrf_exempt
+def updateMovieScreen(request):
+    try:
+        if request.method=="PUT":
+            input_data = json.loads(request.body)
+            old_screen = input_data['old_screen']
+            new_screen = input_data['new_screen']
+            data=MovieBooking.objects.filter(screenname=old_screen).update(screenname=new_screen) 
+            print(data)
+            if data==0:
+                msg="no records found"
+            else:
+                msg="Records updated successfully"          
+            return JsonResponse({"status":"success","msg":msg},status=200)
+        return JsonResponse({"status":"failure","msg":"only PUT method allowed"},status=400)
+    except Exception as e:
+        return JsonResponse({"status":"error",str(e):"something went wrong"},status=500)
+
+
+# CRUD for Book Model_______________________________________________________________________
+@csrf_exempt
+def bookInsert(request):
+    try:
+        if request.method == "POST":
+            try:
+                input_data = json.loads(request.body)
+                book_name = input_data["bookname"]
+                book_price = input_data["bookprice"]
+                author = input_data["author"]
+                book_type = input_data["booktype"]
+                Book.objects.create(bookname = book_name, bookprice = book_price, author = author, booktype = book_type)
+                return JsonResponse(
+                    {"status": "successful", "data": input_data, "status_code": 201},status=201)
+            except Exception as e:
+                return JsonResponse({"status": "failed", "message": "Only POST method allowed"}, status=405)
+
+
+        elif request.method == "GET":
+            try:
+                data=Book.objects.filter().values()           
+                final_data=list(data) 
+                if len(final_data)==0:
+                    msg="no records found"
+                else:
+                    msg="Records fetched successfully"          
+                return JsonResponse({"status":"success","msg":msg,"book":final_data},status=200)
+            except Exception as e:
+                return JsonResponse({"status":"failure","msg":"only GET method allowed"},status=400)
+        
+
+        elif request.method == "PUT":
+            try:
+                input_data = json.loads(request.body)
+                bookid = input_data['id']
+                name = input_data['bookname']
+                price = input_data['bookprice']
+                author = input_data['author']
+                booktype = input_data['booktype']
+                data=Book.objects.filter(id=bookid).update(bookname=name, bookprice=price, author=author, booktype = booktype)           
+                final_data=list(input_data) 
+                if len(final_data)==0:
+                    msg="no records found"
+                else:
+                    msg="Records fetched successfully"          
+                return JsonResponse({"status":"success","msg":msg,"book":final_data},status=200)
+            except Exception as e:
+                return JsonResponse({"status":"failure","msg":"only PUT method is allowed"},status=400)
+
+
+        elif request.method == "DELETE":
+            try:
+                input_data = json.loads(request.body)
+                delete_id = input_data["id"]
+                data = Book.objects.filter(id = delete_id).delete()
+                print(data)
+                if data[0]==0:
+                    msg="No record found"
+                else:
+                    msg = "record deleted successfully"
+                return JsonResponse({"status":"success","msg":msg},status=200)
+            except Exception as e:
+                return JsonResponse({"status":"failure","msg":"only DELETE method is allowed"},status=400) 
+        
+    
+    except Exception as e:
+        return JsonResponse({"status":"error",str(e):"something went wrong"},status=500)

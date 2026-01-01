@@ -15,3 +15,9 @@ class MovieBooking(models.Model):
     dateandtime = models.DateTimeField(auto_now_add=True)
     transaction_id = models.UUIDField(default=uuid.uuid4,editable=False,unique=True)
 
+class Book(models.Model):
+    bookname = models.CharField(max_length = 200)
+    bookprice = models.IntegerField()
+    author = models.CharField(max_length = 100)
+    booktype = models.CharField(max_length = 50)
+    
