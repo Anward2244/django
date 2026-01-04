@@ -206,7 +206,7 @@ def bookInsert(request):
                 return JsonResponse({"status":"success","msg":msg},status=200)
             except Exception as e:
                 return JsonResponse({"status":"failure","msg":"only DELETE method is allowed"},status=400) 
-        
-    
+
+
     except Exception as e:
         return JsonResponse({"status":"error",str(e):"something went wrong"},status=500)
