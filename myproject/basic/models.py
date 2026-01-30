@@ -21,3 +21,8 @@ class Book(models.Model):
     author = models.CharField(max_length = 100)
     booktype = models.CharField(max_length = 50)
     
+
+class User(models.Model):
+    username = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=255)

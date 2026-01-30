@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from basic.models import Book,userData,MovieBooking
+from basic.models import User,Book,userData,MovieBooking
 import json
+import jwt
+from datetime import datetime, timedelta
 
 # Create your views here.
 def home(request):
@@ -210,3 +213,51 @@ def bookInsert(request):
 
     except Exception as e:
         return JsonResponse({"status":"error",str(e):"something went wrong"},status=500)
+
+
+@csrf_exempt
+def signup(request):
+    data = json.loads(request.body)
+    user = User.objects.create(
+        username = data.get('username'),
+        email = data.get('email'),
+        password = data.get('password')
+    )
+
+    return JsonResponse({
+        "status":"success",
+        "msg":"User registered successfully"
+    },status=201)
+
+
+@csrf_exempt
+def login(request):
+    user_info = json.loads(request.body)
+    user = user_info.get('username')
+
+    return JsonResponse({
+        "status":"success",
+        "msg":"login successful",
+        "greetings":f'welcome {user}'
+    },status=201)
+
+
+@csrf_exempt
+def logintoken(request):
+    user_info = json.loads(request.body)
+    user = user_info.get("request")
+    payload = {
+        "user": user,
+        "iat": datetime.utcnow(),
+        "exp": datetime.utcnow() + timedelta(seconds=settings.JWT_EXP_DELTA_SECONDS)
+    }
+
+    token = jwt.encode(
+        payload, settings.JWT_SECRET_KEY, algorithm= settings.JWT_ALGORITHM)
+
+    return JsonResponse ({
+        "status":"success",
+        "msg":"login successful",
+        "geetings":f"welcome {user}",
+        "token":token
+    })

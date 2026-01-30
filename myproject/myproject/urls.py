@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from basic.views import bookInsert, updateMovieScreen, movieInsert, getMoviesByGenrename, home, about, contact, services, htres, jsres, getreq, cityfil, pages, dataInsert
+from basic.views import signup, login, bookInsert, updateMovieScreen, movieInsert, getMoviesByGenrename, home, about, contact, services, htres, jsres, getreq, cityfil, pages, dataInsert
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,5 +33,7 @@ urlpatterns = [
     path('movieInsert/', movieInsert),
     path('movieByGenre/<str:genre>', getMoviesByGenrename),
     path('screenUpdate/',updateMovieScreen),
-    path('bookInsert/',bookInsert)
+    path('bookInsert/',bookInsert),
+    path('signup/',signup),
+    path('login/',login)
 ]
